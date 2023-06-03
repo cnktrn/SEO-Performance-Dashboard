@@ -2,9 +2,6 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build, Resource
 from typing import Dict
 from datetime import datetime
-import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib as mpl
 from influxDB_write import write_to_influxdb, create_point_with_tag, create_point
 from urllib3.exceptions import ConnectTimeoutError
 import urllib3
