@@ -97,8 +97,8 @@ def create_gsc(start_date, domain, bucket):
                         write_to_influxdb(bucket, points)
                         
 
-                    except urllib3.exceptions.ConnectTimeoutError as e:
-                        print("Connection timeout error occurred:", str(e))
+                    except Exception as e:
+                        print("An error occurred:", str(e))
                     
                     
 
