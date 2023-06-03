@@ -15,3 +15,11 @@ def create_point(url, metric, metricValue, date):
         .time(date, WritePrecision.NS)\
 
   return point
+
+def create_point_with_tag(url, metric, metricValue, tagName, tagValue, date):
+  point = Point(url)\
+        .field(metric, metricValue)\
+        .tag(tagName, tagValue)\
+        .time(date, WritePrecision.NS)\
+
+  return point
