@@ -46,7 +46,7 @@ def query(client: Resource, payload: Dict[str, str], domain) -> Dict[str, any]:
 
 
 def create_gsc(start_date, domain, bucket):
-    MAX_ROWS = 25_000
+    MAX_ROWS = 1000 #25_000
     dimensions = ["query","page", "date"]
     end_date = datetime.now().strftime("%Y-%m-%d")
     response_rows = []
@@ -100,10 +100,8 @@ def create_gsc(start_date, domain, bucket):
                     except Exception as e:
                         print("An error occurred:", str(e))
                     
-                    
-
                 else:
-                    response["rows"].remove(row)
+                    pass
                 
             
             response_rows.extend(response["rows"])
