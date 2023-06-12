@@ -5,7 +5,7 @@ from google.analytics.data_v1beta import BetaAnalyticsDataClient
 from google.analytics.data_v1beta.types import (Dimension, Metric, DateRange, Metric, OrderBy, 
                                                FilterExpression, MetricAggregation, CohortSpec)
 from google.analytics.data_v1beta.types import RunReportRequest, RunRealtimeReportRequest
-from influxDB_write import write_to_influxdb, create_point
+from influxDB_write import write_to_influxdb, create_point, find_latest_data_point
 from urllib3.exceptions import ConnectTimeoutError
 import urllib3
 
@@ -48,10 +48,19 @@ def run_report(metricList, days, bucket):
                 dataPoint = create_point("https://"+url, metric, float(row.metric_values[0].value), influx_date_str)
                 try:
                     write_to_influxdb(bucket, dataPoint)
-                except urllib3.exceptions.ConnectTimeoutError as e:
+                except Exception as e:
                     print("Connection timeout error occurred:", str(e))
                 print( url, row.metric_values[0].value)
 
 
-run_report([ "activeUsers", "bounceRate", "screenPageViewsPerSession","totalUsers","sessions",], 7, "Analytica")
+def updateGA4(metricList, bucket, field):
+    last_datetime = find_latest_data_point(bucket, field)
+    current_datetime = datetime.now(timezone.utc)
+    timedelta = current_datetime - last_datetime
+    days_between = timedelta.days
+    print(days_between)
+    run_report(metricList, days_between, bucket)
+
+#run_report(["screenPageViewsPerUser", "activeUsers", "bounceRate", "screenPageViewsPerSession","totalUsers","sessions"], 31, "Analytica")
 #run_report(["sessions"], 7, "Mock2")
+updateGA4(["screenPageViewsPerUser", "activeUsers", "bounceRate", "screenPageViewsPerSession","totalUsers","sessions"], "Analytica", "sessions")

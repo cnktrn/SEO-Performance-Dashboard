@@ -1,4 +1,6 @@
 from ryte import extract_data_for_x_days, update_ryte
+from ga4 import updateGA4
+from google_search_console import update_gsc
 
 bucket="Analytica"
 attributeList = [ "count_links_outgoing",
@@ -16,3 +18,7 @@ project="p9a6b2adea2a2853eadcbbd3fe6f20cd"
 
 update_ryte(bucket, attributeList, api_key, project)
 
+attributeListGA4 = ["screenPageViewsPerUser", "activeUsers", "bounceRate", "screenPageViewsPerSession","totalUsers","sessions"]
+updateGA4(attributeListGA4, bucket, "sessions")
+
+update_gsc("sc-domain:analytica.de", "Analytica", "impressions")

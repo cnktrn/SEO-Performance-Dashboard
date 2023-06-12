@@ -2,7 +2,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build, Resource
 from typing import Dict
 from datetime import datetime
-from influxDB_write import write_to_influxdb, create_point_with_tag, create_point
+from influxDB_write import write_to_influxdb, create_point_with_tag, create_point, find_latest_data_point
 from urllib3.exceptions import ConnectTimeoutError
 import urllib3
 
@@ -46,13 +46,14 @@ def query(client: Resource, payload: Dict[str, str], domain) -> Dict[str, any]:
 
 
 def create_gsc(start_date, domain, bucket):
-    MAX_ROWS = 1000 #25_000
+    MAX_ROWS = 1000 #25000 1000
     dimensions = ["query","page", "date"]
     end_date = datetime.now().strftime("%Y-%m-%d")
     response_rows = []
+    
     i = 0
     while True:
-
+        points = []
         # https://developers.google.com/webmaster-tools/v1/searchanalytics/query
         payload = {
             "startDate": start_date,
@@ -69,7 +70,7 @@ def create_gsc(start_date, domain, bucket):
         if response.get("rows"):
             
             for row in response["rows"]:
-                if row["impressions"] > 1 & row["clicks"] > 0:
+                if row["impressions"] > 1 & row["clicks"] > -1:
                     row["page"] = row["keys"][1]
                     row["date"] = row["keys"][2]
                     date_string = row["keys"][2]
@@ -80,7 +81,7 @@ def create_gsc(start_date, domain, bucket):
                     print("\n\n")
 
                     try:
-                        points = []
+                        #points = []
                         point = create_point_with_tag(row["keys"][1], "impressions", row["impressions"], "keyword", row["keys"][0], influx_date_str)
                         points.append(point)
                         #write_to_influxdb("Mock3", point)
@@ -94,7 +95,7 @@ def create_gsc(start_date, domain, bucket):
                         position = round(float(row["position"]), 1)
                         point = create_point_with_tag(row["keys"][1], "position", position, "keyword", row["keys"][0], influx_date_str)
                         points.append(point)
-                        write_to_influxdb(bucket, points)
+                        #write_to_influxdb(bucket, points)
                         
 
                     except Exception as e:
@@ -103,15 +104,28 @@ def create_gsc(start_date, domain, bucket):
                 else:
                     pass
                 
-            
-            response_rows.extend(response["rows"])
+            try:
+                response_rows.extend(response["rows"])
+            except Exception as e:
+                        print(f"Collected {len(response_rows):,} rows")
+                        print("An error occurred:", str(e))
             
             
             i += 1
         else:
             break
-
+        write_to_influxdb(bucket, points)
         print(f"Collected {len(response_rows):,} rows")
         #print(response_rows[1])
 
-create_gsc("2022-01-01", "sc-domain:analytica.de", "Analytica")
+def update_gsc(domain, bucket, field):
+    last_datetime = find_latest_data_point(bucket, field)
+    last_datetime = last_datetime.strftime("%Y-%m-%d")
+    print(last_datetime)
+    create_gsc(last_datetime, domain, bucket)
+
+
+
+
+#update_gsc("sc-domain:analytica.de", "Analytica", "impressions")
+#create_gsc("2022-01-01", "sc-domain:analytica.de", "Analytica")

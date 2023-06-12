@@ -136,6 +136,10 @@ def extract_data(bucket, attributeList, date, api_key, project):
                     (result["url"],attribute, result[attribute], jsonResult["last_crawled"])
                     point = create_point(result["url"], attribute, result[attribute], jsonResult["last_crawled"])
                     write_api.write(bucket=bucket, org=org, record=point)
+                    try:
+                        write_api.write(bucket=bucket, org=org, record=point)
+                    except Exception as e:
+                        print("Connection timeout error occurred:", str(e))
                      
     else:
         print(response.text)
