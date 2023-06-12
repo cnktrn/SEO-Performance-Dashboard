@@ -16,7 +16,7 @@ attributeList = [ "count_links_outgoing",
 api_key="7df8cf7ef1981515ad93199d2cda8fed"
 project="p9a6b2adea2a2853eadcbbd3fe6f20cd"
 
-update_ryte(bucket, attributeList, api_key, project)
+#update_ryte(bucket, attributeList, api_key, project)
 
 attributeListGA4 = ["screenPageViewsPerUser", "activeUsers", "bounceRate", "screenPageViewsPerSession","totalUsers","sessions"]
 updateGA4(attributeListGA4, bucket, "sessions")

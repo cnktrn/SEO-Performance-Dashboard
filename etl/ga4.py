@@ -63,4 +63,4 @@ def updateGA4(metricList, bucket, field):
 
 #run_report(["screenPageViewsPerUser", "activeUsers", "bounceRate", "screenPageViewsPerSession","totalUsers","sessions"], 31, "Analytica")
 #run_report(["sessions"], 7, "Mock2")
-updateGA4(["screenPageViewsPerUser", "activeUsers", "bounceRate", "screenPageViewsPerSession","totalUsers","sessions"], "Analytica", "sessions")
+#updateGA4(["screenPageViewsPerUser", "activeUsers", "bounceRate", "screenPageViewsPerSession","totalUsers","sessions"], "Analytica", "sessions")

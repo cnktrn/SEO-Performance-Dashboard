@@ -3,8 +3,7 @@ from googleapiclient.discovery import build, Resource
 from typing import Dict
 from datetime import datetime
 from influxDB_write import write_to_influxdb, create_point_with_tag, create_point, find_latest_data_point
-from urllib3.exceptions import ConnectTimeoutError
-import urllib3
+
 
 # define general constants
 #Non-string values require approximately three bytes. String values require variable space, determined by string compression
